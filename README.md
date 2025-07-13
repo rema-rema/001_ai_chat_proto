@@ -49,9 +49,9 @@ A simple web application that provides a chat interface using the OpenAI API (GP
 ### 🎯 **最も簡単な起動方法**
 
 1. **環境変数設定** (.envファイル作成)
-   ```bash
-   cp .env.example .env
-   # .envファイルを編集してOPENAI_API_KEYを設定
+   ```cmd
+   copy .env.example .env
+   rem .envファイルを編集してOPENAI_API_KEYを設定
    ```
 
 2. **自動起動**
@@ -75,13 +75,71 @@ check.bat
 stop.bat
 ```
 
+## 🚀 起動・停止方法まとめ
+
+### ✅ 簡単起動（推奨）
+```cmd
+# 1. 環境変数設定（初回のみ）
+copy .env.example .env
+# .envファイルでOPENAI_API_KEYを設定
+
+# 2. 起動
+start.bat
+
+# 3. アクセス
+# ブラウザで http://localhost:3000 を開く
+```
+
+### ⏹️ 停止方法
+```cmd
+# 完全停止
+stop.bat
+```
+
+### 🔍 状態確認
+```cmd
+# サーバー状況確認
+check.bat
+```
+
+### ⚠️ 手動設定が必要な項目
+
+#### 必須設定
+1. **OpenAI APIキー設定**
+   - `.env.example` を `.env` にコピー
+   - `.env` ファイル内の `OPENAI_API_KEY=` にAPIキーを設定
+   
+#### 推奨設定
+2. **Pythonのバージョン確認**
+   ```cmd
+   python --version  # 3.11+ 推奨
+   ```
+
+3. **Node.jsのバージョン確認**
+   ```cmd
+   node --version    # 18+ 推奨
+   ```
+
+#### トラブル時の手動起動
+```cmd
+# バックエンド起動（別コマンドプロンプト）
+cd backend
+pip install -r requirements.txt
+python app.py
+
+# フロントエンド起動（別コマンドプロンプト）  
+cd client
+npm install
+npm run dev
+```
+
 ## 📋 Manual Setup (手動セットアップ)
 
 ### 🔧 環境変数設定
 
-```bash
+```cmd
 cd 001_ai_chat_proto
-cp .env.example .env
+copy .env.example .env
 ```
 **.env ファイルを編集して以下を設定：**
 ```
@@ -122,11 +180,11 @@ cd client && start /min cmd /c "npm run dev"
 ### 🧪 動作確認手順
 
 **1. API疎通テスト**
-```bash
-# ヘルスチェック
+```cmd
+rem ヘルスチェック
 curl http://localhost:5000
 
-# チャットAPI テスト
+rem チャットAPI テスト
 curl -X POST http://localhost:5000/api/chat ^
   -H "Content-Type: application/json" ^
   -d "{\"message\": \"Hello\", \"history\": []}"
@@ -186,20 +244,20 @@ curl -X POST http://localhost:5000/api/chat ^
 **症状:** `py app.py` でエラーが発生する
 
 **原因と対処法:**
-```bash
-# 1. 依存関係の問題
+```cmd
+rem 1. 依存関係の問題
 pip install -r requirements.txt
 
-# 2. OpenAI APIキーの問題
-# .envファイルでOPENAI_API_KEYを確認
+rem 2. OpenAI APIキーの問題
+rem .envファイルでOPENAI_API_KEYを確認
 
-# 3. ポートの競合
-# 他のアプリがポート5000を使用している
+rem 3. ポートの競合
+rem 他のアプリがポート5000を使用している
 netstat -an | findstr 5000
 ```
 
 **確認コマンド:**
-```bash
+```cmd
 cd backend
 py -c "import flask, openai; print('OK')"
 ```
@@ -209,17 +267,17 @@ py -c "import flask, openai; print('OK')"
 **症状:** `npm run dev` でエラーが発生する
 
 **原因と対処法:**
-```bash
-# 1. Node.js依存関係の問題
+```cmd
+rem 1. Node.js依存関係の問題
 cd client
 npm install
 
-# 2. ポートの競合 (3000番ポート)
-# 自動的に3001ポートに変更される
+rem 2. ポートの競合 (3000番ポート)
+rem 自動的に3001ポートに変更される
 
-# 3. Next.jsキャッシュの問題
+rem 3. Next.jsキャッシュの問題
 npm run clean
-rm -rf .next
+rmdir /s .next
 npm run dev
 ```
 
@@ -228,16 +286,16 @@ npm run dev
 **症状:** チャットでメッセージを送信してもエラーが返る
 
 **原因と対処法:**
-```bash
-# 1. OpenAI APIキーの確認
-curl -X POST http://localhost:5000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "test", "history": []}'
+```cmd
+rem 1. OpenAI APIキーの確認
+curl -X POST http://localhost:5000/api/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"message\": \"test\", \"history\": []}"
 
-# 2. APIキーの有効性確認
-# OpenAIダッシュボードでAPIキーと使用量を確認
+rem 2. APIキーの有効性確認
+rem OpenAIダッシュボードでAPIキーと使用量を確認
 
-# 3. ネットワーク接続確認
+rem 3. ネットワーク接続確認
 ping api.openai.com
 ```
 
@@ -246,11 +304,11 @@ ping api.openai.com
 **症状:** サーバーが停止できない
 
 **対処法:**
-```bash
-# 自動停止スクリプト使用
+```cmd
+rem 自動停止スクリプト使用
 stop.bat
 
-# 手動でプロセス停止
+rem 手動でプロセス停止
 tasklist | findstr python
 tasklist | findstr node
 taskkill /f /im python.exe
@@ -291,11 +349,11 @@ taskkill /f /im node.exe
 - ネットワークタブでAPI呼び出し状況確認
 
 **APIエラー確認:**
-```bash
-# 詳細エラー情報取得
-curl -v -X POST http://localhost:5000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "test", "history": []}'
+```cmd
+rem 詳細エラー情報取得
+curl -v -X POST http://localhost:5000/api/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"message\": \"test\", \"history\": []}"
 ```
 
 ## 🧪 Development Notes
