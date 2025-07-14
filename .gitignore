@@ -1,5 +1,8 @@
 # Environment variables (contains sensitive data)
 .env
+.env.local
+.env.production
+.env.staging
 
 # Node.js dependencies
 node_modules/
@@ -38,6 +41,10 @@ Thumbs.db
 *.log
 logs/
 
+# Temporary/junk files
+nul
+null
+
 # Runtime data
 pids/
 *.pid
@@ -52,3 +59,10 @@ coverage/
 # Build directories
 build/
 dist/
+
+# Fly.io related files
+fly.toml.bak
+.flyctl/
+
+# Docker related files
+docker-compose.override.yml
