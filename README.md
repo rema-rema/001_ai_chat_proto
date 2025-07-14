@@ -46,7 +46,7 @@ A simple web application that provides a chat interface using the OpenAI API (GP
 
 ## ⚡ Quick Start (推奨)
 
-### 🎯 **最も簡単な起動方法**
+### 🎯 **推奨起動方法**
 
 1. **環境変数設定** (.envファイル作成)
    ```cmd
@@ -54,26 +54,27 @@ A simple web application that provides a chat interface using the OpenAI API (GP
    rem .envファイルを編集してOPENAI_API_KEYを設定
    ```
 
-2. **自動起動**
+2. **手動起動** (一つのターミナルで実行)
    ```bash
-   # プロジェクトルートで実行
-   start.bat
+   cd backend && start /min cmd /c "py app.py"
+   cd ..
+   cd client && start /min cmd /c "npm run dev"
    ```
    
-3. **ブラウザでアクセス**
+3. **起動確認**
+   ```bash
+   check.bat
+   ```
+   
+4. **ブラウザでアクセス**
    ```
    http://localhost:3000 または http://localhost:3001
    ```
 
-### 🔍 **起動確認・トラブルシューティング**
-
-```bash
-# 起動状況確認
-check.bat
-
-# サーバー停止
-stop.bat
-```
+5. **停止**
+   ```bash
+   stop.bat
+   ```
 
 ## 🚀 起動・停止方法まとめ
 
@@ -168,12 +169,10 @@ npm run dev
 ```
 → Frontend: `http://localhost:3000`
 
-**方法2: バックグラウンドで起動**
+**方法2: 一つのターミナルで起動**
 ```bash
-# バックエンド (バックグラウンド)
 cd backend && start /min cmd /c "py app.py"
-
-# フロントエンド (バックグラウンド)
+cd ..
 cd client && start /min cmd /c "npm run dev"
 ```
 
