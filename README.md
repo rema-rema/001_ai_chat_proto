@@ -16,9 +16,10 @@ A simple web application that provides a chat interface using the OpenAI API (GP
 ├── backend/         # Python Flask backend
 │   ├── app.py       # Main Flask application
 │   └── requirements.txt
-├── start.bat        # 自動起動スクリプト
-├── check.bat        # 起動確認スクリプト
-├── stop.bat         # サーバー停止スクリプト
+├── deploy.ps1       # Fly.io deployment script
+├── start.ps1        # Fly.io start script
+├── stop.ps1         # Fly.io stop script
+├── status.ps1       # Fly.io status check script
 ├── Dockerfile       # Multi-stage Docker build
 ├── fly.toml         # Fly.io deployment configuration
 ├── .env.example     # Environment variables template
@@ -32,109 +33,76 @@ A simple web application that provides a chat interface using the OpenAI API (GP
 - **Message History**: Maintains conversation context during chat sessions
 - **Error Handling**: Robust error handling for API failures and network issues
 - **Loading States**: Visual feedback during message processing
+- **Access Token Security**: Protected API access with authentication
 - **Production Ready**: Configured for deployment on Fly.io with Docker
 
-## 🛠️ Setup Instructions
+## 🌐 Stage Environment (検証環境)
+
+### 🚀 起動方法
+
+```powershell
+# プロジェクトディレクトリに移動
+cd C:\Users\rema\project\001_ai_chat_proto
+
+# アプリケーション起動
+flyctl scale count 1
+
+# 起動確認
+flyctl status
+```
+
+### 🔗 アクセス方法
+
+**検証環境URL:**
+```
+https://ai-chat-proto.fly.dev/?token=001-xac0ets-s1sFa-xtte4
+```
+
+**重要:** URLに `?token=001-xac0ets-s1sFa-xtte4` パラメータが必要です。これはセキュリティ機能で、OpenAI API の不正使用を防ぎます。
+
+### 📊 状況確認
+
+```powershell
+# アプリケーション状態確認
+flyctl status
+
+# ログ確認
+flyctl logs
+
+# PowerShellスクリプトで確認
+.\status.ps1
+
+# リアルタイムログ監視（問題発生時）
+.\status.ps1 -Logs
+```
+
+### ⏹️ 停止方法
+
+```powershell
+# アプリケーション停止
+flyctl scale count 0
+
+# PowerShellスクリプトで停止
+.\stop.ps1
+
+# 停止確認
+flyctl status
+```
+
+### 🛠️ 管理用スクリプト
+
+- `.\start.ps1` - アプリケーション起動 + ログ監視
+- `.\stop.ps1` - アプリケーション停止 + 課金確認
+- `.\status.ps1` - 状況確認
+- `.\deploy.ps1` - 新しいバージョンのデプロイ
+
+## 🛠️ Local Development (ローカル開発)
 
 ### Prerequisites
 
 - Node.js 18+ (for frontend development)
 - Python 3.11+ (for backend development)
 - OpenAI API key
-- Docker (for deployment)
-- Fly.io CLI (for deployment)
-
-## ⚡ Quick Start (推奨)
-
-### 🎯 **推奨起動方法**
-
-1. **環境変数設定** (.envファイル作成)
-   ```cmd
-   copy .env.example .env
-   rem .envファイルを編集してOPENAI_API_KEYを設定
-   ```
-
-2. **手動起動** (一つのターミナルで実行)
-   ```bash
-   cd backend && start /min cmd /c "py app.py"
-   cd ..
-   cd client && start /min cmd /c "npm run dev"
-   ```
-   
-3. **起動確認**
-   ```bash
-   check.bat
-   ```
-   
-4. **ブラウザでアクセス**
-   ```
-   http://localhost:3000 または http://localhost:3001
-   ```
-
-5. **停止**
-   ```bash
-   stop.bat
-   ```
-
-## 🚀 起動・停止方法まとめ
-
-### ✅ 簡単起動（推奨）
-```cmd
-# 1. 環境変数設定（初回のみ）
-copy .env.example .env
-# .envファイルでOPENAI_API_KEYを設定
-
-# 2. 起動
-start.bat
-
-# 3. アクセス
-# ブラウザで http://localhost:3000 を開く
-```
-
-### ⏹️ 停止方法
-```cmd
-# 完全停止
-stop.bat
-```
-
-### 🔍 状態確認
-```cmd
-# サーバー状況確認
-check.bat
-```
-
-### ⚠️ 手動設定が必要な項目
-
-#### 必須設定
-1. **OpenAI APIキー設定**
-   - `.env.example` を `.env` にコピー
-   - `.env` ファイル内の `OPENAI_API_KEY=` にAPIキーを設定
-   
-#### 推奨設定
-2. **Pythonのバージョン確認**
-   ```cmd
-   python --version  # 3.11+ 推奨
-   ```
-
-3. **Node.jsのバージョン確認**
-   ```cmd
-   node --version    # 18+ 推奨
-   ```
-
-#### トラブル時の手動起動
-```cmd
-# バックエンド起動（別コマンドプロンプト）
-cd backend
-pip install -r requirements.txt
-python app.py
-
-# フロントエンド起動（別コマンドプロンプト）  
-cd client
-npm install
-npm run dev
-```
-
-## 📋 Manual Setup (手動セットアップ)
 
 ### 🔧 環境変数設定
 
@@ -142,22 +110,22 @@ npm run dev
 cd 001_ai_chat_proto
 copy .env.example .env
 ```
+
 **.env ファイルを編集して以下を設定：**
 ```
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ACCESS_TOKEN=your-local-access-token
 PORT=5000
 FLASK_ENV=development
 ```
 
-### 🚀 手動起動手順
-
-**方法1: 別々のターミナルで起動**
+### 🚀 ローカル起動手順
 
 **ターミナル1 (バックエンド):**
 ```bash
 cd backend
 pip install -r requirements.txt
-py app.py
+python app.py
 ```
 → Backend: `http://localhost:5000`
 
@@ -169,223 +137,77 @@ npm run dev
 ```
 → Frontend: `http://localhost:3000`
 
-**方法2: 一つのターミナルで起動**
-```bash
-cd backend && start /min cmd /c "py app.py"
-cd ..
-cd client && start /min cmd /c "npm run dev"
-```
+### 🧪 ローカル動作確認
 
-### 🧪 動作確認手順
-
-**1. API疎通テスト**
-```cmd
-rem ヘルスチェック
-curl http://localhost:5000
-
-rem チャットAPI テスト
-curl -X POST http://localhost:5000/api/chat ^
-  -H "Content-Type: application/json" ^
-  -d "{\"message\": \"Hello\", \"history\": []}"
-```
-
-**2. フロントエンド確認**
-1. ブラウザで `http://localhost:3000` にアクセス
+1. ブラウザで `http://localhost:3000?token=your-local-access-token` にアクセス
 2. "Hello" と入力して送信
 3. AI応答が表示されることを確認
-
-**3. 統合テスト**
-- メッセージ送信 → ローディング → AI応答の流れを確認
-- 複数回やり取りして会話履歴が維持されることを確認
-
-### Production Deployment (Fly.io)
-
-1. **Install Fly.io CLI and authenticate**
-   ```bash
-   curl -L https://fly.io/install.sh | sh
-   fly auth login
-   ```
-
-2. **Set up your Fly.io app**
-   ```bash
-   fly apps create ai-chat-proto
-   ```
-
-3. **Set environment variables**
-   ```bash
-   fly secrets set OPENAI_API_KEY=your_actual_api_key_here
-   ```
-
-4. **Deploy**
-   ```bash
-   fly deploy
-   ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
 - `OPENAI_API_KEY`: Your OpenAI API key (required)
+- `ACCESS_TOKEN`: Access token for API authentication (required)
 - `PORT`: Backend server port (default: 5000)
 - `FLASK_ENV`: Flask environment (development/production)
+- `FLY_APP_NAME`: Automatically set by Fly.io (production detection)
 
 ### API Endpoints
 
-- `GET /`: Health check endpoint
-- `POST /api/chat`: Chat endpoint for sending messages
+- `GET /health`: Health check endpoint
+- `POST /api/chat`: Chat endpoint for sending messages (requires Authorization header)
+- `GET /`: Serves the Next.js static frontend
 
-## 🔧 Troubleshooting (トラブルシューティング)
+## 🔒 Security Features
 
-### 🚨 よくある問題と解決方法
+- **Access Token Authentication**: All chat API calls require valid Bearer token
+- **Environment Variable Protection**: API keys stored securely, never in source code
+- **CORS Configuration**: Properly configured for frontend-backend communication
+- **Input Validation**: Implemented for all API endpoints
 
-#### **1. バックエンドが起動しない**
+## 🌍 Deployment Architecture
 
-**症状:** `py app.py` でエラーが発生する
+### Branch Strategy
+- `main` - Production ready code
+- `develop` - Development branch
+- `stage` - Staging environment (currently deployed to Fly.io)
 
-**原因と対処法:**
-```cmd
-rem 1. 依存関係の問題
-pip install -r requirements.txt
-
-rem 2. OpenAI APIキーの問題
-rem .envファイルでOPENAI_API_KEYを確認
-
-rem 3. ポートの競合
-rem 他のアプリがポート5000を使用している
-netstat -an | findstr 5000
-```
-
-**確認コマンド:**
-```cmd
-cd backend
-py -c "import flask, openai; print('OK')"
-```
-
-#### **2. フロントエンドが起動しない**
-
-**症状:** `npm run dev` でエラーが発生する
-
-**原因と対処法:**
-```cmd
-rem 1. Node.js依存関係の問題
-cd client
-npm install
-
-rem 2. ポートの競合 (3000番ポート)
-rem 自動的に3001ポートに変更される
-
-rem 3. Next.jsキャッシュの問題
-npm run clean
-rmdir /s .next
-npm run dev
-```
-
-#### **3. API疎通に失敗する**
-
-**症状:** チャットでメッセージを送信してもエラーが返る
-
-**原因と対処法:**
-```cmd
-rem 1. OpenAI APIキーの確認
-curl -X POST http://localhost:5000/api/chat ^
-  -H "Content-Type: application/json" ^
-  -d "{\"message\": \"test\", \"history\": []}"
-
-rem 2. APIキーの有効性確認
-rem OpenAIダッシュボードでAPIキーと使用量を確認
-
-rem 3. ネットワーク接続確認
-ping api.openai.com
-```
-
-#### **4. プロセスが残り続ける問題**
-
-**症状:** サーバーが停止できない
-
-**対処法:**
-```cmd
-rem 自動停止スクリプト使用
-stop.bat
-
-rem 手動でプロセス停止
-tasklist | findstr python
-tasklist | findstr node
-taskkill /f /im python.exe
-taskkill /f /im node.exe
-```
-
-### 📋 各環境での詳細動作
-
-#### **バックエンド起動時の内部処理**
-1. `.env`ファイルから環境変数読み込み
-2. OpenAI APIクライアント初期化
-3. Flask-CORSでクロスオリジン設定
-4. `0.0.0.0:5000`でサーバー起動
-5. デバッグモード有効化
-
-#### **フロントエンド起動時の内部処理**
-1. Next.js開発サーバー起動
-2. TypeScriptコンパイル
-3. `localhost:3000`でサーバー起動（競合時は3001）
-4. HMR（Hot Module Replacement）有効化
-5. プロキシ設定でバックエンドAPI連携
-
-#### **API疎通時の内部処理**
-1. フロントエンド → `/api/chat` POST リクエスト
-2. Next.js プロキシ → `localhost:5000/api/chat`
-3. Flask サーバーでリクエスト処理
-4. OpenAI API呼び出し
-5. レスポンス返却 → フロントエンド表示
-
-### 🛠️ エラーログの確認方法
-
-**バックエンドログ:**
-- コマンドプロンプトにFlaskのログが表示
-- `500 Internal Server Error` の場合はデバッガーページ確認
-
-**フロントエンドログ:**
-- ブラウザの開発者ツール (F12) → Console タブ
-- ネットワークタブでAPI呼び出し状況確認
-
-**APIエラー確認:**
-```cmd
-rem 詳細エラー情報取得
-curl -v -X POST http://localhost:5000/api/chat ^
-  -H "Content-Type: application/json" ^
-  -d "{\"message\": \"test\", \"history\": []}"
-```
-
-## 🧪 Development Notes
-
-- フロントエンドは開発時にバックエンドAPIへのプロキシを設定済み
-- バックエンドはFlask-CORSでクロスオリジンリクエストに対応
-- OpenAI API呼び出しは効率化のため直近10件のメッセージのみ送信
-- アプリケーションはデフォルトでGPT-4モデルを使用（`backend/app.py`で変更可能）
+### Production Environment
+- **Platform**: Fly.io
+- **Runtime**: Multi-stage Docker build (Next.js static + Flask)
+- **Region**: Tokyo (nrt)
+- **Auto-scaling**: Enabled with min 0, auto-start on request
 
 ## 📝 Future Enhancements
 
-- [ ] Database integration for persistent chat history (Supabase planned)
-- [ ] User authentication system
-- [ ] Vector search for conversation consistency
-- [ ] Payment integration with Stripe
+- [ ] Daily usage limits per access token
+- [ ] User management system
+- [ ] Database integration for persistent chat history
 - [ ] Message export functionality
 - [ ] Multi-language support
 
-## 🔒 Security Considerations
+## 🔧 Troubleshooting
 
-- API keys are stored securely using environment variables
-- CORS is properly configured for production
-- Input validation is implemented for all API endpoints
-- Rate limiting considerations for OpenAI API usage
+### Common Issues
+
+1. **401 Unauthorized Error**
+   - Ensure URL includes `?token=` parameter
+   - Check token matches the one set in environment variables
+
+2. **App Not Responding**
+   - Check if machines are running: `flyctl status`
+   - Restart if needed: `flyctl scale count 0` then `flyctl scale count 1`
+
+3. **API Errors**
+   - Check logs: `flyctl logs`
+   - Verify OpenAI API key is valid
+   - Check environment variables: `flyctl secrets list`
 
 ## 📄 License
 
 This project is for development and testing purposes. Please ensure compliance with OpenAI's usage policies when deploying to production.
 
-## 🤝 Contributing
-
-This project was developed using AI-driven development with Claude Code. For consistency and maintenance, please follow the existing code patterns and architecture.
-
 ---
 
-**Note**: This is a prototype application. For production use, consider implementing additional security measures, monitoring, and scalability optimizations.
+**Note**: This is a prototype application. The stage environment is used for testing and validation before production deployment.
