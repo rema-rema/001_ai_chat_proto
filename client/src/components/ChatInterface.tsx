@@ -42,11 +42,25 @@ export default function ChatInterface() {
     setIsLoading(true)
 
     try {
+      // URLからアクセストークンを取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      
+      console.log('Full URL:', window.location.href); // デバッグ用
+      console.log('Search params:', window.location.search); // デバッグ用
+      console.log('Token from URL:', token); // デバッグ用
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           message: userMessage.content,
           history: messages

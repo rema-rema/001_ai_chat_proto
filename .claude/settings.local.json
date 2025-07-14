@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start.bat)",
+      "Bash(cmd:*)",
+      "Bash(.start.bat)",
+      "Bash(python:*)",
+      "Bash(py app.py)",
+      "Bash(npm run dev:*)",
+      "Bash(dir /a C:Usersremaproject001_ai_chat_proto.env)",
+      "Bash(ls:*)",
+      "Bash(test:*)",
+      "Bash(./start.bat)",
+      "Bash(curl:*)",
+      "Bash(del debug_env.bat)",
+      "Bash(rm:*)",
+      "Bash(timeout:*)",
+      "Bash(taskkill:*)",
+      "Bash(dir)",
+      "Bash(stop.bat)",
+      "Bash(./stop.bat)",
+      "Bash(powershell:*)",
+      "Bash(git add:*)",
+      "Bash(where bash)",
+      "Bash(set CLAUDE_CODE_GIT_BASH_PATH=D:programFilesGitusrbinbash.exe)",
+      "Bash(setx:*)",
+      "Bash(del:*)",
+      "Bash(Remove-Item -Path \"debug_backend.bat\",\"manual_start.bat\",\"nul\",\"set_env_variable.bat\",\"start_backend.bat\",\"start_backend_test.bat\",\"start_frontend.bat\",\"start_with_env.bat\",\"test_backend.bat\" -Force)",
+      "Bash(dir:*)",
+      "Bash(flyctl apps:*)",
+      "Bash(flyctl secrets set:*)",
+      "Bash(flyctl status:*)",
+      "Bash(flyctl logs:*)",
+      "Bash(flyctl deploy:*)"
+    ],
+    "deny": []
+  }
+}

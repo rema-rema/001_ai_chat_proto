@@ -1,42 +1,44 @@
-# Multi-stage build for production deployment
-FROM node:18-alpine AS frontend-builder
+# マルチステージビルド：Next.js + Flask 同梱
+FROM node:18-alpine AS frontend-build
 
+# フロントエンド作業ディレクトリ
 WORKDIR /app/client
-COPY client/package*.json ./
-RUN npm ci --only=production
 
+# package.jsonとpackage-lock.jsonをコピー
+COPY client/package*.json ./
+
+# 依存関係をインストール
+RUN npm install
+
+# Next.jsアプリケーションのソースコードをコピー
 COPY client/ ./
+
+# Next.jsアプリケーションをビルド（静的エクスポート）
 RUN npm run build
 
-# Python backend stage
+# Python環境でFlaskアプリケーションを実行
 FROM python:3.11-slim
 
+# 作業ディレクトリを設定
 WORKDIR /app
 
-# Install Python dependencies
+# システムの依存関係をインストール
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pythonの依存関係をコピーしてインストール
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
+# Flaskアプリケーションをコピー
 COPY backend/ ./
 
-# Copy built frontend from previous stage
-COPY --from=frontend-builder /app/client/out ./static
+# フロントエンドのビルド結果をコピー
+COPY --from=frontend-build /app/client/out ./client/out
 
-# Create a simple static file server for frontend
-RUN echo 'from flask import Flask, send_from_directory\n\
-app = Flask(__name__)\n\
-@app.route("/")\n\
-def serve_index():\n\
-    return send_from_directory("static", "index.html")\n\
-@app.route("/<path:path>")\n\
-def serve_static(path):\n\
-    return send_from_directory("static", path)\n\
-if __name__ == "__main__":\n\
-    app.run(host="0.0.0.0", port=3000)' > static_server.py
+# ポートを公開
+EXPOSE 8080
 
-# Expose ports
-EXPOSE 5000 3000
-
-# Start both backend and frontend
-CMD ["sh", "-c", "python static_server.py & python app.py"]
+# アプリケーションを起動
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "app:app"]
