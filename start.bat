@@ -1,73 +1,84 @@
 @echo off
+chcp 65001 >nul
 echo ====================================
-echo AI チャットアプリ起動スクリプト
+echo AI Chat App Startup Script
 echo ====================================
 echo.
 
-:: 環境変数ファイルの確認
 if not exist ".env" (
-    echo [エラー] .envファイルが見つかりません
-    echo .env.exampleをコピーして.envファイルを作成し、OpenAI APIキーを設定してください
+    echo [ERROR] .env file not found
+    echo Copy .env.example to .env and set your OpenAI API key
     pause
     exit /b 1
 )
 
-echo [情報] 環境変数ファイル確認 - OK
+echo [INFO] Environment file check - OK
 echo.
 
-:: バックエンドの依存関係確認とインストール
-echo [開始] バックエンドの依存関係インストール...
+echo [START] Installing backend dependencies...
 cd backend
 pip install -r requirements.txt >nul 2>&1
 if errorlevel 1 (
-    echo [エラー] バックエンドの依存関係インストールに失敗しました
+    echo [ERROR] Backend dependency installation failed
     pause
     exit /b 1
 )
-echo [完了] バックエンドの依存関係インストール完了
+echo [DONE] Backend dependencies installed
 cd ..
 
-:: フロントエンドの依存関係確認とインストール
-echo [開始] フロントエンドの依存関係インストール...
+echo [START] Installing frontend dependencies...
 cd client
 npm install >nul 2>&1
 if errorlevel 1 (
-    echo [エラー] フロントエンドの依存関係インストールに失敗しました
+    echo [ERROR] Frontend dependency installation failed
     pause
     exit /b 1
 )
-echo [完了] フロントエンドの依存関係インストール完了
+echo [DONE] Frontend dependencies installed
 cd ..
 
 echo.
 echo ====================================
-echo サーバー起動中...
+echo Starting servers...
 echo ====================================
 
-:: バックエンドサーバーをバックグラウンドで起動
-echo [開始] バックエンドサーバー起動...
-start "AIチャットバックエンド" /min cmd /c "cd backend && py app.py"
+echo [START] Starting backend server...
+echo [DEBUG] Checking OPENAI_API_KEY...
+set "API_KEY_TEST=%OPENAI_API_KEY%"
+if not defined OPENAI_API_KEY (
+    echo [ERROR] OPENAI_API_KEY environment variable is not set
+    echo Please run set_env_variable.bat first
+    pause
+    exit /b 1
+)
+if "%API_KEY_TEST%"=="" (
+    echo [ERROR] OPENAI_API_KEY environment variable is empty
+    echo Please run set_env_variable.bat first
+    pause
+    exit /b 1
+)
+echo [DEBUG] OPENAI_API_KEY is set and not empty
 
-:: 3秒待機
+start "AI Chat Backend" /min cmd /c "set OPENAI_API_KEY=%OPENAI_API_KEY% && cd backend && py app.py"
+
 timeout /t 3 /nobreak >nul
 
-:: フロントエンドサーバーを起動
-echo [開始] フロントエンドサーバー起動...
-start "AIチャットフロントエンド" /min cmd /c "cd client && npm run dev"
+echo [START] Starting frontend server...
+start "AI Chat Frontend" /min cmd /c "cd client && npm run dev"
 
-:: 5秒待機
-timeout /t 5 /nobreak >nul
+echo [INFO] Waiting for servers to initialize...
+timeout /t 8 /nobreak >nul
 
 echo.
 echo ====================================
-echo 起動完了！
+echo Starting servers in parallel...
 echo ====================================
 echo.
-echo フロントエンド: http://localhost:3000
-echo バックエンド:   http://localhost:5000
+echo Frontend: http://localhost:3000
+echo Backend:   http://localhost:5000
 echo.
-echo ブラウザでhttp://localhost:3000にアクセスしてください
+echo Please access http://localhost:3000 in your browser
 echo.
-echo サーバーを停止するには、開いたコマンドプロンプトでCtrl+Cを押してください
+echo To stop servers, press Ctrl+C in the opened command prompts
 echo.
 pause
