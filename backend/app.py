@@ -11,11 +11,16 @@ static_folder = 'client/out' if is_production else '../client/out'
 app = Flask(__name__, static_folder=static_folder, static_url_path='')
 CORS(app)
 
-# Windows環境変数を優先してAPIキーを取得
+# 環境別にAPIキーを取得
 api_key = os.getenv('OPENAI_API_KEY')
 if not api_key:
-    load_dotenv()
-    load_dotenv('../.env.local')
+    if is_production:
+        # Stage/Prod環境：fly.ioの環境変数から取得
+        load_dotenv()
+    else:
+        # ローカル環境：プロジェクトルートの.envファイルから取得
+        load_dotenv('../.env')
+        load_dotenv('../.env.local')
     api_key = os.getenv('OPENAI_API_KEY')
 
 client = OpenAI(api_key=api_key)

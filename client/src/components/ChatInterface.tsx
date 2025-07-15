@@ -58,7 +58,12 @@ export default function ChatInterface() {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      const response = await fetch('/api/chat', {
+      // 環境別のAPIエンドポイント設定
+      const apiBaseUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:8080'  // ローカル環境
+        : window.location.origin;   // Stage/Prod環境
+      
+      const response = await fetch(`${apiBaseUrl}/api/chat`, {
         method: 'POST',
         headers,
         body: JSON.stringify({

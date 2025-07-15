@@ -31,7 +31,12 @@
       "Bash(flyctl secrets set:*)",
       "Bash(flyctl status:*)",
       "Bash(flyctl logs:*)",
-      "Bash(flyctl deploy:*)"
+      "Bash(flyctl deploy:*)",
+      "Bash(npm start)",
+      "Bash(check.bat)",
+      "Bash(echo $PATH)",
+      "Bash(.check.bat)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
