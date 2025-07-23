@@ -46,10 +46,6 @@ export default function ChatInterface() {
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
       
-      console.log('Full URL:', window.location.href); // デバッグ用
-      console.log('Search params:', window.location.search); // デバッグ用
-      console.log('Token from URL:', token); // デバッグ用
-      
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };

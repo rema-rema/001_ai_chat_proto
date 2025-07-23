@@ -125,7 +125,7 @@ FLASK_ENV=development
 ```bash
 cd backend
 pip install -r requirements.txt
-python app.py
+py app.py
 ```
 → Backend: `http://localhost:5000`
 
